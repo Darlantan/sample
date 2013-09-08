@@ -5,8 +5,15 @@ describe "Static pages" do
   subject { page }
 
   shared_examples_for "all static pages" do
+    let(:user) { FactoryGirl.create(:user) }
+
     it { should have_selector('h1', text: heading) }
     it { should have_title(full_title(page_title)) }
+
+    it { should_not have_link('Users',       href: users_path) }
+    it { should_not have_link('Profile',     href: user_path(user)) }
+    it { should_not have_link('Settings',    href: edit_user_path(user)) }
+    it { should_not have_link('Sign out',    href: signout_path) }
   end
 
   it "should have the right links on the layout" do
