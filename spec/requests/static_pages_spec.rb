@@ -41,7 +41,7 @@ describe "Static pages" do
 
     describe "for signed-in users" do
       let(:user) { FactoryGirl.create(:user) }
-      let(:other_user) { FactoryGirl.create(:user, email: "other@example.com") }
+      let(:other_user) { FactoryGirl.create(:user) }
       before do
         40.times { FactoryGirl.create(:micropost, user: user, content: "Lorem ipsum") }
         20.times { FactoryGirl.create(:micropost, user: other_user, content: "Lorem ipsum") }
@@ -61,6 +61,16 @@ describe "Static pages" do
 
       it "should count user's microposts" do
         expect(page).to have_selector("span#sidebar-microposts-count", text: "#{user.microposts.count} "+"micropost".pluralize(user.microposts.count))
+      end
+
+      describe "follower/following counts" do
+        before do
+          other_user.follow!(user)
+          visit root_path
+        end
+
+        it { should have_link("0 following", href: following_user_path(user)) }
+        it { should have_link("1 followers", href: followers_user_path(user)) }
       end
     end
   end
