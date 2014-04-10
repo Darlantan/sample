@@ -1,0 +1,12 @@
+<script>
+  $(document).ready(function() {
+    $('textarea').bind('input', function(){
+      maxLength = parseInt($(this).attr('maxlength'));
+      valLength = $(this).val().length;
+      if(valLength > maxLength){
+          return false;
+      }
+      $(this).nextAll('.counter').html((maxLength - valLength) + ' characters remaining.');
+    });
+  });
+</script>

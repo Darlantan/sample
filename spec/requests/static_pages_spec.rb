@@ -41,8 +41,10 @@ describe "Static pages" do
 
     describe "for signed-in users" do
       let(:user) { FactoryGirl.create(:user) }
+      let(:other_user) { FactoryGirl.create(:user, email: "other@example.com") }
       before do
         40.times { FactoryGirl.create(:micropost, user: user, content: "Lorem ipsum") }
+        20.times { FactoryGirl.create(:micropost, user: other_user, content: "Lorem ipsum") }
         sign_in user
         visit root_path
       end

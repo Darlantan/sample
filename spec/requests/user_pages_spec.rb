@@ -53,25 +53,32 @@ describe "User pages" do
   end
 
   describe "profile page" do
-    let!(:user) { FactoryGirl.create(:user) }
-    let!(:m1) { FactoryGirl.create(:micropost, user: user, content: "Foo") }
-    let!(:m2) { FactoryGirl.create(:micropost, user: user, content: "Bar") }
+    let(:user) { FactoryGirl.create(:user) }
+    let(:wrong_user) { FactoryGirl.create(:user, email: "wrong@example.com") }
 
+    before { 40.times { FactoryGirl.create(:micropost, user: user, content: "Lorem ipsum") } }
     before { visit user_path(user) }
+    after { User.delete_all }
 
     it { should have_content(user.name) }
     it { should have_title(user.name) }
 
     describe "microposts" do
-      it { should have_content(m1.content) }
-      it { should have_content(m2.content) }
       it { should have_content(user.microposts.count) }
 
-      describe "pagination" do
-        before(:all) { 40.times { FactoryGirl.create(:micropost, user: user, content: "Lorem ipsum") } }
-        after(:all)  { User.delete_all }
+      it "should have users own microposts" do
+        expect(page).to have_content("Lorem ipsum", count: 30)
+      end
 
+      describe "pagination" do
         it { should have_selector('div.pagination') }
+      end
+
+      describe "as other user" do
+        before { sign_in(wrong_user) }
+        before { visit user_path(user) }
+
+        it { should_not have_content("delete") }
       end
     end
   end
